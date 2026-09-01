@@ -208,11 +208,13 @@ def loc_query(owner_affiliation, comment_size=0, force_cache=False, cursor=None,
     }'''
     variables = {'owner_affiliation': owner_affiliation, 'login': USER_NAME, 'cursor': cursor}
     request = simple_request(loc_query.__name__, query, variables)
-    if request.json()['data']['user']['repositories']['pageInfo']['hasNextPage']:   # If repository data has another page
-        edges += request.json()['data']['user']['repositories']['edges']            # Add on to the LoC count
-        return loc_query(owner_affiliation, comment_size, force_cache, request.json()['data']['user']['repositories']['pageInfo']['endCursor'], edges)
+    page = request.json()['data']['user']['repositories']
+    page_edges = [e for e in page['edges'] if e['node'] is not None]  # drop repos the token can't fully see
+    if page['pageInfo']['hasNextPage']:   # If repository data has another page
+        edges += page_edges               # Add on to the LoC count
+        return loc_query(owner_affiliation, comment_size, force_cache, page['pageInfo']['endCursor'], edges)
     else:
-        return cache_builder(edges + request.json()['data']['user']['repositories']['edges'], comment_size, force_cache)
+        return cache_builder(edges + page_edges, comment_size, force_cache)
 
 
 def cache_builder(edges, comment_size, force_cache, loc_add=0, loc_del=0):
@@ -293,7 +295,10 @@ def stars_counter(data):
     Count total stars in repositories owned by me
     """
     total_stars = 0
-    for node in data: total_stars += node['node']['stargazers']['totalCount']
+    for node in data:
+        if node['node'] is None:  # repo the token can't fully see, or deleted mid-query
+            continue
+        total_stars += node['node']['stargazers']['totalCount']
     return total_stars
 
 
