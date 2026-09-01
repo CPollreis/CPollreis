@@ -23,10 +23,9 @@ import pathlib
 BASE = pathlib.Path(__file__).parent
 SP = pathlib.Path(__file__).parent
 
-X_ASCII, X_INFO, X_STATS = 15, 390, 15
+X_ASCII, X_INFO = 15, 390
 Y0, STEP = 30, 20
 VCOL, WRAP = 22, 34          # right panel: value column, wrap width
-SVCOL = 15                    # left stats value column
 
 def esc(s):
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
@@ -66,12 +65,9 @@ def ascii_block(fill, lines):
     return "\n".join(out), Y0 + (len(lines)-1)*STEP
 
 # ---------------------------------------------------------------- right panel
-AGE_PREVIEW = "21 years, 10 months, 6 days"
 RIGHT = [
     ("hdr",  "caleb@pollreis"),
-    ("kv",   "OS", "Arch, Ubuntu, macOS, Windows"),
-    ("kv",   "Uptime", None),
-    ("kv",   "Kernel", "Computer Engineering Student (Co-op)"),
+    ("kv",   "Major", "Computer Engineering (Co-op)"),
     ("gap",),
     ("head", "Skills"),
     ("kv",   "Languages", "C++, C, Python, Verilog, Java"),
@@ -114,10 +110,7 @@ def build_right():
         elif e[0] == "stats":
             phys += build_stats()
         elif e[0] == "kv":
-            if e[1] == "Uptime":
-                phys += kv("Uptime", AGE_PREVIEW, "age_data", "age_data_dots")
-            else:
-                phys += kv(e[1], e[2])
+            phys += kv(e[1], e[2])
     return phys
 
 # ---------------------------------------------------------------- GitHub stats
@@ -129,9 +122,6 @@ def build_stats():
         return (f'<tspan class="cc">. </tspan><tspan class="key">{esc(key)}</tspan>:'
                 f'{dm}<tspan class="value" id="{vid}">{val}</tspan>')
     return [f'- GitHub Stats -{"—"*(43-len("GitHub Stats"))}-—-',
-            line("Repos", "repo_data", "95", "repo_data_dots"),
-            line("Contributed", "contrib_data", "133"),
-            line("Stars", "star_data", "342", "star_data_dots"),
             line("Commits", "commit_data", "2,116", "commit_data_dots"),
             line("Followers", "follower_data", "196", "follower_data_dots"),
             line("LOC", "loc_data", "446,276", "loc_data_dots"),
@@ -190,10 +180,10 @@ text, tspan {{white-space: pre;}}
 
 MODES = {
     "dark_mode.svg":  dict(RECT="#161b22", INFO="#c9d1d9", ASCII="#c9d1d9",
-                           KEY="#ffa657", VALUE="#a5d6ff", ADD="#3fb950",
+                           KEY="#d2a8ff", VALUE="#a5d6ff", ADD="#3fb950",
                            DEL="#f85149", CC="#616e7f"),
     "light_mode.svg": dict(RECT="#f6f8fa", INFO="#24292f", ASCII="#24292f",
-                           KEY="#953800", VALUE="#0a3069", ADD="#1a7f37",
+                           KEY="#8250df", VALUE="#0a3069", ADD="#1a7f37",
                            DEL="#cf222e", CC="#c2cfde"),
 }
 ASCII_FOR = {"dark_mode.svg": ascii_dark_lines, "light_mode.svg": ascii_light_lines}
