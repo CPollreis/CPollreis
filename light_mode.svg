@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<svg xmlns="http://www.w3.org/2000/svg" font-family="ConsolasFallback,Consolas,monospace" width="985px" height="814px" font-size="16px">
+<svg xmlns="http://www.w3.org/2000/svg" font-family="ConsolasFallback,Consolas,monospace" width="985px" height="634px" font-size="16px">
 <style>
 @font-face {
 src: local('Consolas'), local('Consolas Bold');
@@ -15,7 +15,7 @@ size-adjust: 109%;
 .cc {fill: #c2cfde;}
 text, tspan {white-space: pre;}
 </style>
-<rect width="985px" height="814px" fill="#f6f8fa" rx="15"/>
+<rect width="985px" height="634px" fill="#f6f8fa" rx="15"/>
 <text x="15" y="30" fill="#24292f" class="ascii">
 <tspan x="15" y="30">wwwwwaaasawy_-*wwyaaw_,  ,/0@@// _J_</tspan>
 <tspan x="15" y="50">      /wwwwwJZZ/gyy_/ Z/_,74P//,g#`</tspan>
@@ -48,9 +48,9 @@ text, tspan {white-space: pre;}
 <tspan x="390" y="50" class="cc">. </tspan><tspan class="key">OS</tspan>:<tspan class="cc"> ................ </tspan><tspan class="value">Arch, Ubuntu, macOS, Windows</tspan>
 <tspan x="390" y="70" class="cc">. </tspan><tspan class="key">Uptime</tspan>:<tspan class="cc" id="age_data_dots"> ...................... </tspan><tspan class="value" id="age_data">21 years, 10 months, 6 days</tspan>
 <tspan x="390" y="90" class="cc">. </tspan><tspan class="key">Kernel</tspan>:<tspan class="cc"> ............ </tspan><tspan class="value">Computer Engineering Student (Co-op)</tspan>
-<tspan x="390" y="110" class="cc">. </tspan><tspan class="key">IDE</tspan>:<tspan class="cc"> ............... </tspan><tspan class="value">Cursor, VSCode, Claude Code, Codex</tspan>
-<tspan x="390" y="130" class="cc">. </tspan>
-<tspan x="390" y="150">- Skills -—————————————————————————————————————-—-</tspan>
+<tspan x="390" y="110" class="cc">. </tspan>
+<tspan x="390" y="130">- Skills -—————————————————————————————————————-—-</tspan>
+<tspan x="390" y="150" class="cc">. </tspan><tspan class="key">Languages</tspan>:<tspan class="cc"> ......... </tspan><tspan class="value">C++, C, Python, Verilog, Java</tspan>
 <tspan x="390" y="170" class="cc">. </tspan><tspan class="key">Robotics.CV</tspan>:<tspan class="cc"> ....... </tspan><tspan class="value">ROS2, OpenCV, PPO,</tspan>
 <tspan x="390" y="190" class="cc">. </tspan><tspan>                    </tspan><tspan class="value">NVIDIA Jetson Orin, Eigen,</tspan>
 <tspan x="390" y="210" class="cc">. </tspan><tspan>                    </tspan><tspan class="value">Cloudini</tspan>
