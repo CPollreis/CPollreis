@@ -72,32 +72,18 @@ RIGHT = [
     ("kv",   "OS", "Arch, Ubuntu, macOS, Windows"),
     ("kv",   "Uptime", None),
     ("kv",   "Kernel", "Computer Engineering Student (Co-op)"),
-    ("kv",   "IDE", "Cursor, VSCode, Claude Code, Codex"),
     ("gap",),
     ("head", "Skills"),
+    ("kv",   "Languages", "C++, C, Python, Verilog, Java"),
     ("kv",   "Robotics.CV", "ROS2, OpenCV, PPO, NVIDIA Jetson Orin, Eigen, Cloudini"),
     ("kv",   "ML", "PyTorch, TensorRT, CUDA, ONNX, Deep Learning, CNN, YOLO, "
                    "CLIP, Reinforcement Learning, scikit-learn, Weights & Biases, "
                    "AWS (EC2/S3/SageMaker), Model Deployment, ML Evaluation"),
     ("kv",   "AI.Tools", "Claude, Claude Code, Codex, Cursor, LLMs, Generative AI"),
-    ("kv",   "Languages", "C++, C, Python, Verilog, Java"),
-    ("kv",   "CS.Core", "OOP, Data Structures, Algorithms"),
-    ("kv",   "Embedded", "FreeRTOS, STM32Cube, Raspberry Pi, CAN (J1939 / CAN2.0), "
-                         "SPI, UART/USART, I2C, TCP/IP"),
     ("kv",   "Build.Tools", "Docker, CMake, GTest, LLVM, clang-tidy, cpplint, "
                             "GitHub Actions, Jenkins"),
-    ("kv",   "Frontend", "JavaScript, TypeScript, React, Astro, Tailwind CSS"),
-    ("kv",   "VCS", "Git, GitHub, Bitbucket, Jira"),
     ("gap",),
-    ("head", "Hobbies"),
-    ("kv",   "Software", "RL game bots, offline LLM agents"),
-    ("kv",   "Hardware", "FSAE driverless car, custom PCBs"),
-    ("gap",),
-    ("head", "Contact"),
-    ("kv",   "Email.Personal", "calebpollreis@gmail.com"),
-    ("kv",   "GitHub", "CPollreis"),
-    ("kv",   "Website", "calebpollreis.com"),
-    ("kv",   "LinkedIn", "calebpollreis"),
+    ("stats",),
 ]
 
 def kv(key, value, value_id=None, dots_id=None):
@@ -125,6 +111,8 @@ def build_right():
             phys.append(f'- {esc(e[1])} -{"—"*(43-len(e[1]))}-—-')
         elif e[0] == "gap":
             phys.append('<tspan class="cc">. </tspan>')
+        elif e[0] == "stats":
+            phys += build_stats()
         elif e[0] == "kv":
             if e[1] == "Uptime":
                 phys += kv("Uptime", AGE_PREVIEW, "age_data", "age_data_dots")
@@ -132,28 +120,27 @@ def build_right():
                 phys += kv(e[1], e[2])
     return phys
 
-# ---------------------------------------------------------------- left stats
+# ---------------------------------------------------------------- GitHub stats
 def build_stats():
     def line(key, vid, val, did=None):
         prefix = f". {key}: "
-        ndots = max(1, SVCOL - len(prefix))
+        ndots = max(1, VCOL - len(prefix))
         dm = f'<tspan class="cc"{f" id=\"{did}\"" if did else ""}> {"."*ndots} </tspan>'
         return (f'<tspan class="cc">. </tspan><tspan class="key">{esc(key)}</tspan>:'
                 f'{dm}<tspan class="value" id="{vid}">{val}</tspan>')
-    out = [f'- GitHub Stats -{"—"*12}-—-',
-           line("Repos", "repo_data", "95", "repo_data_dots"),
-           line("Contributed", "contrib_data", "133"),
-           line("Stars", "star_data", "342", "star_data_dots"),
-           line("Commits", "commit_data", "2,116", "commit_data_dots"),
-           line("Followers", "follower_data", "196", "follower_data_dots"),
-           line("LOC", "loc_data", "446,276", "loc_data_dots"),
-           (f'<tspan class="cc">. </tspan><tspan>{" "*(SVCOL-2)}</tspan>'
-            f'( <tspan class="addColor" id="loc_add">523,178</tspan>'
-            f'<tspan class="addColor">++</tspan>, '
-            f'<tspan class="cc" id="loc_del_dots"> </tspan>'
-            f'<tspan class="delColor" id="loc_del">76,902</tspan>'
-            f'<tspan class="delColor">--</tspan> )')]
-    return out
+    return [f'- GitHub Stats -{"—"*(43-len("GitHub Stats"))}-—-',
+            line("Repos", "repo_data", "95", "repo_data_dots"),
+            line("Contributed", "contrib_data", "133"),
+            line("Stars", "star_data", "342", "star_data_dots"),
+            line("Commits", "commit_data", "2,116", "commit_data_dots"),
+            line("Followers", "follower_data", "196", "follower_data_dots"),
+            line("LOC", "loc_data", "446,276", "loc_data_dots"),
+            (f'<tspan class="cc">. </tspan><tspan>{" "*(VCOL-2)}</tspan>'
+             f'( <tspan class="addColor" id="loc_add">523,178</tspan>'
+             f'<tspan class="addColor">++</tspan>, '
+             f'<tspan class="cc" id="loc_del_dots"> </tspan>'
+             f'<tspan class="delColor" id="loc_del">76,902</tspan>'
+             f'<tspan class="delColor">--</tspan> )')]
 
 # ---------------------------------------------------------------- assemble
 def text_block(x, phys, y_start):
@@ -168,16 +155,14 @@ def text_block(x, phys, y_start):
     out.append("</text>")
     return "\n".join(out), y_start + (len(phys)-1)*STEP
 
-right_phys, stats_phys = build_right(), build_stats()
-STATS_TOP = 550
+right_phys = build_right()
 right_svg, right_bottom = text_block(X_INFO, right_phys, Y0)
-stats_svg, stats_bottom = text_block(X_STATS, stats_phys, STATS_TOP)
 
 ascii_dark_lines = load_ascii("ascii_portrait_dark.txt")
 ascii_light_lines = load_ascii("ascii_portrait.txt")
 _, ascii_bottom = ascii_block("__ASCII__", ascii_dark_lines)
 
-H = max(right_bottom, stats_bottom, ascii_bottom) + 24
+H = max(right_bottom, ascii_bottom) + 24
 W = 985
 
 TEMPLATE = """<?xml version='1.0' encoding='UTF-8'?>
@@ -200,7 +185,6 @@ text, tspan {{white-space: pre;}}
 <rect width="{W}px" height="{H}px" fill="{RECT}" rx="15"/>
 {ASCII}
 {RIGHT}
-{STATS}
 </svg>
 """
 
@@ -219,8 +203,7 @@ for fn, c in MODES.items():
         W=W, H=H,
         ASCII=ascii_svg_t.replace("__ASCII__", c["ASCII"]),
         RIGHT=right_svg.replace("__INFO__", c["INFO"]),
-        STATS=stats_svg.replace("__INFO__", c["INFO"]),
         RECT=c["RECT"], KEY=c["KEY"], VALUE=c["VALUE"], ADD=c["ADD"],
         DEL=c["DEL"], CC=c["CC"])
     (BASE / fn).write_text(svg)
-    print(f"wrote {fn}: {W}x{H}  (right y{right_bottom} / stats y{stats_bottom} / ascii y{ascii_bottom})")
+    print(f"wrote {fn}: {W}x{H}  (right y{right_bottom} / ascii y{ascii_bottom})")
