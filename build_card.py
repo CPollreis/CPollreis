@@ -71,13 +71,11 @@ RIGHT = [
     ("gap",),
     ("head", "Skills"),
     ("kv",   "Languages", "C++, C, Python, Verilog, Java"),
-    ("kv",   "Robotics.CV", "ROS2, OpenCV, PPO, NVIDIA Jetson Orin, Eigen, Cloudini"),
+    ("kv",   "Robotics.CV", "ROS2, OpenCV, PPO, NVIDIA Jetson Orin"),
     ("kv",   "ML", "PyTorch, TensorRT, CUDA, ONNX, Deep Learning, CNN, YOLO, "
-                   "CLIP, Reinforcement Learning, scikit-learn, Weights & Biases, "
+                   "CLIP, Reinforcement Learning, "
                    "AWS (EC2/S3/SageMaker), Model Deployment, ML Evaluation"),
     ("kv",   "AI.Tools", "Claude, Claude Code, Codex, Cursor, LLMs, Generative AI"),
-    ("kv",   "Build.Tools", "Docker, CMake, GTest, LLVM, clang-tidy, cpplint, "
-                            "GitHub Actions, Jenkins"),
     ("gap",),
     ("stats",),
 ]
@@ -94,7 +92,7 @@ def kv(key, value, value_id=None, dots_id=None):
            f'<tspan class="value"{vid}>{esc(lines[0])}</tspan>']
     for cont in lines[1:]:
         out.append(f'<tspan class="cc">. </tspan>'
-                   f'<tspan>{" "*(VCOL-2)}</tspan>'
+                   f'<tspan>{" "*(VCOL-1)}</tspan>'
                    f'<tspan class="value">{esc(cont)}</tspan>')
     return out
 
@@ -114,23 +112,23 @@ def build_right():
     return phys
 
 # ---------------------------------------------------------------- GitHub stats
+# Values are left-aligned at VCOL, same column as the kv rows above. The daily
+# Action only swaps the id="..._data" / loc_add / loc_del text; it must not
+# touch the "_dots" spans, or the alignment breaks.
 def build_stats():
-    def line(key, vid, val, did=None):
+    def line(key, vid, val, did, tail=""):
         prefix = f". {key}: "
-        ndots = max(1, VCOL - len(prefix))
-        dm = f'<tspan class="cc"{f" id=\"{did}\"" if did else ""}> {"."*ndots} </tspan>'
+        dots = "." * max(1, VCOL - len(prefix))
         return (f'<tspan class="cc">. </tspan><tspan class="key">{esc(key)}</tspan>:'
-                f'{dm}<tspan class="value" id="{vid}">{val}</tspan>')
+                f'<tspan class="cc" id="{did}"> {dots} </tspan>'
+                f'<tspan class="value" id="{vid}">{val}</tspan>{tail}')
+    loc_tail = (' ( <tspan class="addColor" id="loc_add">42,300</tspan>'
+                '<tspan class="addColor">++</tspan>, '
+                '<tspan class="delColor" id="loc_del">19,838</tspan>'
+                '<tspan class="delColor">--</tspan> )')
     return [f'- GitHub Stats -{"—"*(43-len("GitHub Stats"))}-—-',
-            line("Commits", "commit_data", "2,116", "commit_data_dots"),
-            line("Followers", "follower_data", "196", "follower_data_dots"),
-            line("LOC", "loc_data", "446,276", "loc_data_dots"),
-            (f'<tspan class="cc">. </tspan><tspan>{" "*(VCOL-2)}</tspan>'
-             f'( <tspan class="addColor" id="loc_add">523,178</tspan>'
-             f'<tspan class="addColor">++</tspan>, '
-             f'<tspan class="cc" id="loc_del_dots"> </tspan>'
-             f'<tspan class="delColor" id="loc_del">76,902</tspan>'
-             f'<tspan class="delColor">--</tspan> )')]
+            line("Commits", "commit_data", "134", "commit_data_dots"),
+            line("LOC", "loc_data", "22,462", "loc_data_dots", loc_tail)]
 
 # ---------------------------------------------------------------- assemble
 def text_block(x, phys, y_start):

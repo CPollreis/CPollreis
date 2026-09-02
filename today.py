@@ -10,7 +10,7 @@ import hashlib
 # Issues and pull requests permissions not needed at the moment, but may be used in the future
 HEADERS = {'authorization': 'token '+ os.environ['ACCESS_TOKEN']}
 USER_NAME = os.environ['USER_NAME'] # 'CPollreis'
-QUERY_COUNT = {'user_getter': 0, 'follower_getter': 0, 'graph_repos_stars': 0, 'recursive_loc': 0, 'graph_commits': 0, 'loc_query': 0}
+QUERY_COUNT = {'user_getter': 0, 'graph_repos_stars': 0, 'recursive_loc': 0, 'graph_commits': 0, 'loc_query': 0}
 
 
 def simple_request(func_name, query, variables):
@@ -275,35 +275,19 @@ def stars_counter(data):
     return total_stars
 
 
-def svg_overwrite(filename, commit_data, follower_data, loc_data):
+def svg_overwrite(filename, commit_data, loc_data):
     """
-    Parse SVG files and update elements with my commits, followers, and lines written
+    Parse SVG files and update elements with my commits and lines written.
+    Values are left-aligned by build_card.py; only the value text is swapped
+    here, never the "_dots" spans, so the columns stay aligned.
     """
     tree = etree.parse(filename)
     root = tree.getroot()
-    justify_format(root, 'commit_data', commit_data, 22)
-    justify_format(root, 'follower_data', follower_data, 10)
-    justify_format(root, 'loc_data', loc_data[2], 9)
-    justify_format(root, 'loc_add', loc_data[0])
-    justify_format(root, 'loc_del', loc_data[1], 7)
+    find_and_replace(root, 'commit_data', f"{commit_data:,}" if isinstance(commit_data, int) else str(commit_data))
+    find_and_replace(root, 'loc_data', str(loc_data[2]))
+    find_and_replace(root, 'loc_add', str(loc_data[0]))
+    find_and_replace(root, 'loc_del', str(loc_data[1]))
     tree.write(filename, encoding='utf-8', xml_declaration=True)
-
-
-def justify_format(root, element_id, new_text, length=0):
-    """
-    Updates and formats the text of the element, and modifes the amount of dots in the previous element to justify the new text on the svg
-    """
-    if isinstance(new_text, int):
-        new_text = f"{'{:,}'.format(new_text)}"
-    new_text = str(new_text)
-    find_and_replace(root, element_id, new_text)
-    just_len = max(0, length - len(new_text))
-    if just_len <= 2:
-        dot_map = {0: '', 1: ' ', 2: '. '}
-        dot_string = dot_map[just_len]
-    else:
-        dot_string = ' ' + ('.' * just_len) + ' '
-    find_and_replace(root, f"{element_id}_dots", dot_string)
 
 
 def find_and_replace(root, element_id, new_text):
@@ -345,23 +329,6 @@ def user_getter(username):
     variables = {'login': username}
     request = simple_request(user_getter.__name__, query, variables)
     return {'id': request.json()['data']['user']['id']}, request.json()['data']['user']['createdAt']
-
-def follower_getter(username):
-    """
-    Returns the number of followers of the user
-    """
-    query_count('follower_getter')
-    query = '''
-    query($login: String!){
-        user(login: $login) {
-            followers {
-                totalCount
-            }
-        }
-    }'''
-    request = simple_request(follower_getter.__name__, query, {'login': username})
-    return int(request.json()['data']['user']['followers']['totalCount'])
-
 
 def query_count(funct_id):
     """
@@ -405,16 +372,15 @@ if __name__ == '__main__':
     total_loc, loc_time = perf_counter(loc_query, ['OWNER', 'COLLABORATOR', 'ORGANIZATION_MEMBER'], 7)
     formatter('LOC (cached)', loc_time) if total_loc[-1] else formatter('LOC (no cache)', loc_time)
     commit_data, commit_time = perf_counter(commit_counter, 7)
-    follower_data, follower_time = perf_counter(follower_getter, USER_NAME)
 
     for index in range(len(total_loc)-1): total_loc[index] = '{:,}'.format(total_loc[index]) # format added, deleted, and total LOC
 
-    svg_overwrite('dark_mode.svg', commit_data, follower_data, total_loc[:-1])
-    svg_overwrite('light_mode.svg', commit_data, follower_data, total_loc[:-1])
+    svg_overwrite('dark_mode.svg', commit_data, total_loc[:-1])
+    svg_overwrite('light_mode.svg', commit_data, total_loc[:-1])
 
     # move cursor to override 'Calculation times:' with 'Total function time:' and the total function time, then move cursor back
     print('\033[F\033[F\033[F\033[F\033[F\033[F\033[F\033[F',
-        '{:<21}'.format('Total function time:'), '{:>11}'.format('%.4f' % (user_time + loc_time + commit_time + follower_time)),
+        '{:<21}'.format('Total function time:'), '{:>11}'.format('%.4f' % (user_time + loc_time + commit_time)),
         ' s \033[E\033[E\033[E\033[E\033[E\033[E\033[E\033[E', sep='')
 
     print('Total GitHub GraphQL API calls:', '{:>3}'.format(sum(QUERY_COUNT.values())))
