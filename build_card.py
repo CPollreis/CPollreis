@@ -71,11 +71,11 @@ RIGHT = [
     ("gap",),
     ("head", "Skills"),
     ("kv",   "Languages", "C++, C, Python, Verilog, Java"),
-    ("kv",   "Robotics.CV", "ROS2, OpenCV, PPO, NVIDIA Jetson Orin"),
+    ("kv",   "Robotics", "ROS2, OpenCV, PPO, NVIDIA Jetson Orin"),
     ("kv",   "ML", "PyTorch, TensorRT, CUDA, ONNX, Deep Learning, CNN, YOLO, "
                    "CLIP, Reinforcement Learning, "
                    "AWS (EC2/S3/SageMaker), Model Deployment, ML Evaluation"),
-    ("kv",   "AI.Tools", "Claude, Claude Code, Codex, Cursor, LLMs, Generative AI"),
+    ("kv",   "AI", "Claude, Claude Code, Codex, Cursor, LLMs, Generative AI"),
     ("gap",),
     ("stats",),
 ]
@@ -96,11 +96,15 @@ def kv(key, value, value_id=None, dots_id=None):
                    f'<tspan class="value">{esc(cont)}</tspan>')
     return out
 
+# All three rule lines (hdr, head, stats header) end at the same column:
+#   caleb@pollreis -——…——-—-   ==   - Skills -——…——-—-   ==   - GitHub Stats -——…——-—-
+# hdr overhead before the dashes is " -" (2); head/stats overhead is "- " + " -" (4),
+# hence 45-len vs 43-len.
 def build_right():
     phys = []
     for e in RIGHT:
         if e[0] == "hdr":
-            phys.append(f'{esc(e[1])} -{"—"*37}-—-')
+            phys.append(f'{esc(e[1])} -{"—"*(45-len(e[1]))}-—-')
         elif e[0] == "head":
             phys.append(f'- {esc(e[1])} -{"—"*(43-len(e[1]))}-—-')
         elif e[0] == "gap":
